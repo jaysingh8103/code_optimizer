@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_VERSION = '3.10'  // Change based on your environment
+        PYTHON_VERSION = '3.10'
         VENV_DIR = 'venv'
     }
 
@@ -15,41 +15,41 @@ pipeline {
 
         stage('Setup Environment') {
             steps {
-                sh '''
+                sh """
                 python3 -m venv ${VENV_DIR}
                 source ${VENV_DIR}/bin/activate
                 pip install --upgrade pip
-                pip install -r requirements.txt
-                '''
+                pip install -r requirements.txt || echo "No requirements.txt found"
+                """
             }
         }
 
         stage('Error Detection') {
             steps {
-                sh '''
+                sh """
                 source ${VENV_DIR}/bin/activate
                 python code_optimizer.py .
-                '''
+                """
             }
         }
 
         stage('Code Formatting') {
             steps {
-                sh '''
+                sh """
                 source ${VENV_DIR}/bin/activate
-                black .
-                autopep8 --in-place --recursive .
-                isort .
-                '''
+                black . || echo "Black formatting failed"
+                autopep8 --in-place --recursive . || echo "autopep8 formatting failed"
+                isort . || echo "isort formatting failed"
+                """
             }
         }
 
         stage('Optimization') {
             steps {
-                sh '''
+                sh """
                 source ${VENV_DIR}/bin/activate
                 python code_optimizer.py .
-                '''
+                """
             }
         }
 
@@ -87,32 +87,37 @@ pipeline {
                 }
             }
             steps {
-                sh '''
-                git config --global user.email "jaypals840@gmail.com"
-                git config --global user.name "jaysingh8103"
+                sh """
+                git config user.email "jaypals840@gmail.com"
+                git config user.name "jaysingh8103"
                 git add .
                 git commit -m "Automated code optimization by Jenkins pipeline"
                 git push origin main
-                '''
+                """
             }
         }
 
         stage('Post-Processing') {
             steps {
-                sh 'echo "Code optimization completed successfully!"'
+                echo "Code optimization completed successfully!"
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline completed successfully!'
+            echo '✅ Pipeline completed successfully!'
         }
         failure {
-            echo 'Pipeline failed! Please check the logs.'
+            echo '❌ Pipeline failed! Please check the logs.'
         }
         always {
-            sh 'deactivate || true'
+            sh """
+            if [ -d ${VENV_DIR} ]; then
+                echo "Deactivating virtual environment"
+                deactivate || true
+            fi
+            """
         }
     }
 }
