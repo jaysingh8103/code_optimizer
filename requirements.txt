@@ -1,0 +1,7 @@
+
+pylint
+ruff
+vulture
+black
+autopep8
+isort
