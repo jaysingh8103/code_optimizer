@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/your-repo/code-optimizer.git'
+                git branch: 'main', url: 'https://github.com/jaysingh8103/code_optimizer.git'
             }
         }
 
