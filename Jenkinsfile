@@ -16,6 +16,7 @@ pipeline {
         stage('Setup Environment') {
             steps {
                 sh """
+                git config --global http.version HTTP/1.1
                 python3 -m venv ${VENV_DIR}
                 source ${VENV_DIR}/bin/activate
                 pip install --upgrade pip
