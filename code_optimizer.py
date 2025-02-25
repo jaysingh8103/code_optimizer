@@ -1,21 +1,22 @@
-import os
-import sys
-import subprocess
 import ast
+import os
+import subprocess
+import sys
 
 # Error detection tools
 ERROR_TOOLS = {
     "pylint": "pylint {file_path} --output-format=text",
     "ruff": "ruff check {file_path}",
-    "vulture": "vulture {file_path}"
+    "vulture": "vulture {file_path}",
 }
 
 # Code formatting and optimization tools
 FORMAT_TOOLS = {
     "black": "black {file_path}",
     "autopep8": "autopep8 --in-place {file_path}",
-    "isort": "isort {file_path}"
+    "isort": "isort {file_path}",
 }
+
 
 # Custom AST-based optimizations
 class CodeOptimizer(ast.NodeTransformer):
@@ -35,7 +36,15 @@ class CodeOptimizer(ast.NodeTransformer):
             if isinstance(node.body[0].value, ast.Call):
                 call_func = node.body[0].value.func.id
                 if call_func == "print":
-                    return [ast.Expr(value=ast.Call(func=ast.Name(id="print", ctx=ast.Load()), args=[ast.Constant(value="Hello")], keywords=[]))]
+                    return [
+                        ast.Expr(
+                            value=ast.Call(
+                                func=ast.Name(id="print", ctx=ast.Load()),
+                                args=[ast.Constant(value="Hello")],
+                                keywords=[],
+                            )
+                        )
+                    ]
         return node
 
     def visit_ListComp(self, node):
@@ -48,7 +57,10 @@ class CodeOptimizer(ast.NodeTransformer):
         if isinstance(node.func, ast.Name) and node.func.id == "list":
             # Replace list(set(...)) with set(...)
             if len(node.args) == 1 and isinstance(node.args[0], ast.Call):
-                if isinstance(node.args[0].func, ast.Name) and node.args[0].func.id == "set":
+                if (
+                    isinstance(node.args[0].func, ast.Name)
+                    and node.args[0].func.id == "set"
+                ):
                     return node.args[0]
         return node
 
@@ -63,7 +75,8 @@ class CodeOptimizer(ast.NodeTransformer):
 def run_command(command):
     """Run a shell command and return its output."""
     try:
-        result = subprocess.run(command, shell=True, capture_output=True, text=True)
+        result = subprocess.run(command, shell=True,
+                                capture_output=True, text=True)
         return result.stdout, result.stderr
     except Exception as e:
         return None, str(e)

@@ -1,2 +1,2 @@
-hello === 4
-print(   hello)
+hello == = 4
+print(hello)
