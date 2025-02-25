@@ -4,6 +4,8 @@ pipeline {
     environment {
         PYTHON_VERSION = '3.10'
         VENV_DIR = 'venv'
+        GITHUB_TOKEN = 'github_credentials'
+        
     }
 
     stages {
@@ -88,7 +90,7 @@ pipeline {
                 }
             }
             steps {
-                withCredentials([string(credentialsId: 'github_credentials', variable: 'github_credentials')]) {
+                withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
                     sh '''
                     git config --global user.email "jaypals840@gmail.com"
                     git config --global user.name "jaysingh8103"
