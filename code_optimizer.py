@@ -126,7 +126,7 @@ def scan_and_optimize(directory):
     """Recursively scan and optimize all Python files in the directory."""
     for root, _, files in os.walk(directory):
         for file in files:
-            if file.startwith("simple","example") file.endswith(".py"):
+            if file.startswith(("simple", "example")) and file.endswith(".py"):
                 file_path = os.path.join(root, file)
                 process_python_file(file_path)
 
