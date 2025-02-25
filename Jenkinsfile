@@ -88,15 +88,19 @@ pipeline {
                 }
             }
             steps {
-                sh """
-                git config user.email "jaypals840@gmail.com"
-                git config user.name "jaysingh8103"
-                git add .
-                git commit -m "Automated code optimization by Jenkins pipeline"
-                git push origin main
-                """
+                withCredentials([string(credentialsId: 'github_credentials', variable: 'GITHUB_TOKEN')]) {
+                    sh '''
+                    git config --global user.email "jaypals840@gmail.com"
+                    git config --global user.name "jaysingh8103"
+                    git remote set-url origin https://jaysingh8103:${GITHUB_TOKEN}@github.com/jaysingh8103/code_optimizer.git
+                    git add .
+                    git commit -m "Automated code optimization by Jenkins pipeline"
+                    git push origin main
+                    '''
+                }
             }
         }
+
 
         stage('Post-Processing') {
             steps {
